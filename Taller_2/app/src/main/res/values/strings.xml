@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Taller_2</string>
+    <string name="buttonGaleria">Seleccionar Imagen</string>
+    <string name="buttonCamara">Camara</string>
+</resources>

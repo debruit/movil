@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageButton
+        android:id="@+id/camera"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:onClick="ir_camara"
+        android:paddingBottom="20dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/camera"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <ImageButton
+        android:id="@+id/contacts"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:onClick="ir_contactos"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/contacts"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <ImageButton
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/location"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+</LinearLayout>
