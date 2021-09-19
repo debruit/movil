@@ -30,6 +30,7 @@
     <ImageButton
         android:id="@+id/location"
         android:layout_width="match_parent"
+        android:onClick="ir_mapa"
         android:layout_height="100dp"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/location"

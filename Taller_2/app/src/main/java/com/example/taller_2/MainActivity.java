@@ -21,4 +21,8 @@ public class MainActivity extends AppCompatActivity {
     public void ir_camara(View v){
         startActivity(new Intent(this,imagenesActivity.class));
     }
+
+    public void ir_mapa(View v){
+        startActivity(new Intent(this,MapsActivity.class));
+    }
 }

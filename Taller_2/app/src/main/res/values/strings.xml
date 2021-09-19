@@ -2,4 +2,5 @@
     <string name="app_name">Taller_2</string>
     <string name="buttonGaleria">Seleccionar Imagen</string>
     <string name="buttonCamara">Camara</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
