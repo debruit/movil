@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Taller_3</string>
+    <string name="email">Email</string>
+    <string name="contraseña">Contraseña</string>
+    <string name="entrar">Entrar</string>
+    <string name="registrar">Registrarse</string>
+    <string name="seleccionar">cargar foto</string>
+    <string name="camara">Tomar foto</string>
+    <string name="name">Nombre</string>
+    <string name="apellido">Apellido</string>
+    <string name="identificacion">Identificación</string>
+    <string name="latitud">Latitud</string>
+    <string name="longitud">Longitud</string>
+</resources>
