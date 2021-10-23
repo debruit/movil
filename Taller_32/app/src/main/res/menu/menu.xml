@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/online"
+        android:icon="@drawable/ic_baseline_online_prediction_24"
+        android:title="@string/online"
+        android:visible="true"/>
+    <item
+        android:id="@+id/allOnline"
+        android:icon="@drawable/ic_baseline_login_24"
+        android:title="@string/todos"
+        android:visible="true"/>
+    <item
+        android:id="@+id/salir"
+        android:icon="@drawable/ic_baseline_login_24"
+        android:title="@string/salir"
+        android:visible="true"/>
+</menu>

@@ -16,15 +16,40 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Register extends AppCompatActivity {
+
+    private static final int IMAGE_REQUEST = 1;
+    private static final int CAMERA_REQUEST = 2;
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+            Pattern.CASE_INSENSITIVE);
+    public static final String PATH_USERS="users/";
+
+    private EditText nombre,apellido,email,password,identificacion,latitud,longitud;
+    private FirebaseAuth mAuth;
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
 
     ImageView image;
     String cameraPermission = Manifest.permission.CAMERA;
@@ -32,15 +57,23 @@ public class Register extends AppCompatActivity {
     int idCamera = 3;
     int idGallery = 4;
 
-    private static final int IMAGE_REQUEST = 1;
-    private static final int CAMERA_REQUEST = 2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
         image = (ImageView)findViewById(R.id.imagen);
+
+        nombre = findViewById(R.id.nombre);
+        apellido = findViewById(R.id.apellido);
+        email = findViewById(R.id.emailRegistrar);
+        password = findViewById(R.id.passwordRegistrar);
+        identificacion = findViewById(R.id.identificacion);
+        latitud = findViewById(R.id.latitud);
+        longitud = findViewById(R.id.longitud);
+
+        mAuth = FirebaseAuth.getInstance();
+        database= FirebaseDatabase.getInstance();
     }
 
     private void camera(){
@@ -122,5 +155,95 @@ public class Register extends AppCompatActivity {
                     image.setImageBitmap(imageBitmap);
                 }
         }
+    }
+
+    public void registro(View view) {
+        String correo = email.getText().toString();
+        String contra = password.getText().toString();
+        if (validar(correo, contra)) {
+            mAuth.createUserWithEmailAndPassword(correo, contra).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(Register.this, task.getException().toString(), Toast.LENGTH_LONG).show();
+                    } else {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+
+                            Usuario usuario = new Usuario();
+                            usuario.setNombre(nombre.getText().toString());
+                            usuario.setApellido(apellido.getText().toString());
+                            usuario.setId(Long.parseLong(identificacion.getText().toString()));
+                            usuario.setLatitud(Double.parseDouble(latitud.getText().toString()));
+                            usuario.setLongitud(Double.parseDouble(longitud.getText().toString()));
+                            usuario.setDisponible(false);
+
+                            myRef = database.getReference(PATH_USERS+user.getUid());
+                            myRef.setValue(usuario);
+
+                            UserProfileChangeRequest.Builder upcrb = new UserProfileChangeRequest.Builder();
+                            upcrb.setDisplayName(correo);
+                            user.updateProfile(upcrb.build());
+                            updateUI(user);
+                        }
+                    }
+                }
+            });
+        }else{
+            nombre.setText("");
+            apellido.setText("");
+            email.setText("");
+            password.setText("");
+            identificacion.setText("");
+            latitud.setText("");
+            longitud.setText("");
+        }
+    }
+
+    private void updateUI(FirebaseUser currentUser){
+        mAuth.signOut();
+        nombre.setText("");
+        apellido.setText("");
+        email.setText("");
+        password.setText("");
+        identificacion.setText("");
+        latitud.setText("");
+        longitud.setText("");
+        Intent intent = new Intent(getBaseContext(),MainActivity.class);
+        startActivity(intent);
+    }
+
+    public boolean validateEmailId(String emailId) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailId);
+        return matcher.find();
+    }
+
+    public boolean validar(String correo, String contra) {
+
+        if(TextUtils.isEmpty(correo)){
+            email.setError("Required");
+            return false;
+        }
+        if(TextUtils.isEmpty(contra)){
+            password.setError("Required");
+            return false;
+        }
+
+        // Email invalido
+        if (!validateEmailId(correo)) {
+            email.setError("Email no válido");
+            return false;
+        }
+
+        // Password no puede tener espacios
+        else if (!Pattern.matches("[^ ]*", contra)) {
+            password.setError("La contraseña no puede contener espacios");
+            return false;
+        }else if(contra.length() < 5){
+            password.setError("La contraseña debe ser mayor a 5 caracteres");
+            return false;
+        }
+
+        return true;
     }
 }

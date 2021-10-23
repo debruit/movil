@@ -11,4 +11,8 @@
     <string name="identificacion">Identificación</string>
     <string name="latitud">Latitud</string>
     <string name="longitud">Longitud</string>
+    <string name="salir">Salir</string>
+    <string name="online">Estar disponible</string>
+    <string name="todos">Ver usuarios disponibles</string>
+    <string name="posActual">Ver</string>
 </resources>

@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Taller_3">
         <activity
+            android:name=".AllOnline"
+            android:exported="false" />
+        <activity
             android:name=".authDone"
             android:exported="false" />
         <activity

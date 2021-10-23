@@ -73,11 +73,13 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
-                                Toast.makeText(MainActivity.this, task.getException().toString(),
+                                Toast.makeText(MainActivity.this, "com.example.taller_3.Usuario o contraseña inválidos",
                                         Toast.LENGTH_LONG).show();
                                 email.setText("");
                                 password.setText("");
                             } else {
+                                email.setText("");
+                                password.setText("");
                                 Intent intent = new Intent(MainActivity.this, authDone.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -121,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
         // Password no puede tener espacios
         else if (!Pattern.matches("[^ ]*", contra)) {
             password.setError("La contraseña no puede contener espacios");
+            return false;
+        }else if(contra.length() < 5){
+            password.setError("La contraseña debe ser mayor a 5 caracteres");
             return false;
         }
 
