@@ -24,6 +24,8 @@ public class authDone extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference myRef;
 
+    boolean cambio=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +46,6 @@ public class authDone extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemClicked = item.getItemId();
         if (itemClicked == R.id.salir) {
-            myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/disponible");
-            myRef.setValue(false);
             mAuth.signOut();
             Intent intent = new Intent(authDone.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -53,8 +53,15 @@ public class authDone extends AppCompatActivity {
             startActivity(intent);
         } else if (itemClicked == R.id.online) {
             myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/disponible");
-            myRef.setValue(true);
-            Toast.makeText(authDone.this,"Estado cambiado a Disponible",Toast.LENGTH_LONG).show();
+            if(cambio){
+                cambio=false;
+                myRef.setValue(false);
+                Toast.makeText(authDone.this,"Estado cambiado a No Disponible",Toast.LENGTH_LONG).show();
+            }else {
+                cambio=true;
+                myRef.setValue(true);
+                Toast.makeText(authDone.this,"Estado cambiado a Disponible",Toast.LENGTH_LONG).show();
+            }
 
         } else if (itemClicked == R.id.allOnline) {
             startActivity(new Intent(authDone.this, AllOnline.class));

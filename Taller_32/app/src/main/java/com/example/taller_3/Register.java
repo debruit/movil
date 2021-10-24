@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,10 +21,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +35,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -48,8 +56,12 @@ public class Register extends AppCompatActivity {
     private EditText nombre,apellido,email,password,identificacion,latitud,longitud;
     private FirebaseAuth mAuth;
 
+    Uri imageUri;
+
     FirebaseDatabase database;
     DatabaseReference myRef;
+    FirebaseStorage storage;
+    StorageReference mStorageRef;
 
     ImageView image;
     String cameraPermission = Manifest.permission.CAMERA;
@@ -74,6 +86,9 @@ public class Register extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         database= FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
+        mStorageRef = storage.getReference();
+
     }
 
     private void camera(){
@@ -139,10 +154,11 @@ public class Register extends AppCompatActivity {
             case IMAGE_REQUEST:
                 if (resultCode==RESULT_OK){
                     try {
-                        final Uri imageUri = data.getData();
+                        imageUri = data.getData();
                         final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                         final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                         image.setImageBitmap(selectedImage);
+                        Log.e("POR ACAAA",image.getDrawable().toString());
                     } catch (FileNotFoundException e){
                         e.printStackTrace();
                     }
@@ -153,6 +169,7 @@ public class Register extends AppCompatActivity {
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
                     image.setImageBitmap(imageBitmap);
+                    Log.e("POR ACAAA",image.getDrawable().toString());
                 }
         }
     }
@@ -177,6 +194,8 @@ public class Register extends AppCompatActivity {
                             usuario.setLatitud(Double.parseDouble(latitud.getText().toString()));
                             usuario.setLongitud(Double.parseDouble(longitud.getText().toString()));
                             usuario.setDisponible(false);
+
+                            uploadImg(user);
 
                             myRef = database.getReference(PATH_USERS+user.getUid());
                             myRef.setValue(usuario);
@@ -246,4 +265,31 @@ public class Register extends AppCompatActivity {
 
         return true;
     }
+
+    private void uploadImg(FirebaseUser currentUser) {
+
+        image.setDrawingCacheEnabled(true);
+        image.buildDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+//        Uri file = uri;
+        StorageReference imageRef = mStorageRef.child("images/profile/"+currentUser.getUid()+"/image.jpg");
+
+        imageRef.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Get a URL to the uploaded content
+                Log.i("FBApp", "Succesfullyupload image");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads// ...}});}https://firebase.google.com/docs/storage/android/start
+            }
+        });
+    }
+
 }

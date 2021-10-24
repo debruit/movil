@@ -30,9 +30,9 @@
 
                 <ImageView
                     android:id="@+id/img"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_weight="0.5"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_weight="0.3"
                     android:scaleType="fitCenter"
                     android:src="@drawable/mapa"/>
 
@@ -41,14 +41,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
 
                 <Button
                     android:id="@+id/posActual"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="0.2"
+                    android:layout_weight="0.1"
                     android:text="@string/posActual" />
             </LinearLayout>
         </LinearLayout>

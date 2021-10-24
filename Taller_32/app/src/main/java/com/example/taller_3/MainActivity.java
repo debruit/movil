@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
-                                Toast.makeText(MainActivity.this, "com.example.taller_3.Usuario o contraseña inválidos",
+                                Toast.makeText(MainActivity.this, "Usuario o contraseña inválidos",
                                         Toast.LENGTH_LONG).show();
                                 email.setText("");
                                 password.setText("");
