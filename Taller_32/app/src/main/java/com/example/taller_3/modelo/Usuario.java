@@ -1,4 +1,4 @@
-package com.example.taller_3;
+package com.example.taller_3.modelo;
 
 public class Usuario {
     public String nombre;

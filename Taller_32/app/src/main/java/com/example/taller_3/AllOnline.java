@@ -1,18 +1,26 @@
 package com.example.taller_3;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.taller_3.modelo.Usuario;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class AllOnline extends AppCompatActivity {
 
@@ -33,11 +42,12 @@ public class AllOnline extends AppCompatActivity {
     DatabaseReference myRef;
     FirebaseStorage storage;
     StorageReference mStorageRef;
+    ArrayList<String> names = new ArrayList<>();
+    ArrayList<Uri> sUris = new ArrayList<>();
 
-    LinearLayout listUsers,listLinear;
-    ImageView imagen;
-    TextView nombre;
-    Button ver;
+    AdapterS adp;
+
+    ListView list;
     ValueEventListener val;
 
     public static final String PATH_USERS="users/";
@@ -48,20 +58,19 @@ public class AllOnline extends AppCompatActivity {
         setContentView(R.layout.activity_all_online);
 
         database = FirebaseDatabase.getInstance();
-        listUsers = findViewById(R.id.listUsers);
-        imagen = findViewById(R.id.img);
-        nombre = findViewById(R.id.name);
-        ver = findViewById(R.id.posActual);
-        listLinear = findViewById(R.id.linear);
 
         storage = FirebaseStorage.getInstance();
         mStorageRef = storage.getReference();
+
+        list = findViewById(R.id.list);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         changes();
+
     }
 
     @Override
@@ -77,50 +86,79 @@ public class AllOnline extends AppCompatActivity {
         val = myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-//                listLinear.removeAllViews();
-                listUsers.removeAllViews();
+                names.clear();
+                sUris.clear();
                 for (DataSnapshot child: dataSnapshot.getChildren()){
-                    ImageView iv = new ImageView(AllOnline.this);
                     Usuario usuario = child.getValue(Usuario.class);
                     if(usuario.getDisponible()){
-                        nombre.setText(usuario.getNombre()+" "+usuario.getApellido());
+                        String nm = usuario.getNombre()+" "+usuario.getApellido();
                         try {
-                            iv.setImageURI(downloadFile(child.getKey()));
+                            downloadFile(child.getKey(),nm);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        listUsers.addView(imagen);
-                        listUsers.addView(nombre);
-                        listUsers.addView(ver);
                     }
                 }
+                list.setAdapter(adp);
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
             }
+
         });
+
     }
 
-    private Uri downloadFile(String key) throws IOException {
-        final Uri[] uri = new Uri[1];
+    private void downloadFile(String key, String nam) throws IOException {
         File localFile= File.createTempFile("images", "jpg");
         StorageReference imageRef= mStorageRef.child("images/profile/"+key+"/image.jpg");
         imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                // Successfully downloaded data to local file// ...
-                imagen.setImageURI(Uri.fromFile(localFile));
-                uri[0] = Uri.fromFile(localFile);
-                //UpdateUIusing the localFile
+
+                // Successfully downloaded data to local file//
+                sUris.add(Uri.fromFile(localFile));
+                names.add(nam);
+                adp = new AdapterS(AllOnline.this,names,sUris);
+                list.setAdapter(adp);
                 }})
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle failed download// ...
                     }});
-        return uri[0];
+    }
+
+    class AdapterS extends ArrayAdapter<String> {
+
+        Context context;
+        ArrayList<String> nombreA;
+        ArrayList<Uri> foto;
+
+        AdapterS(Context c, ArrayList<String> name, ArrayList<Uri> uri){
+            super(c, R.layout.users, R.id.name,name);
+            this.context = c;
+            this.nombreA = name;
+            this.foto = uri;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            LayoutInflater layoutInflater = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View row = layoutInflater.inflate(R.layout.users,parent,false);
+
+            ImageView imgView = row.findViewById(R.id.img);
+            TextView name = row.findViewById(R.id.name);
+            Button button = row.findViewById(R.id.ver);
+
+            imgView.setImageURI(this.foto.get(position));
+            name.setText(this.nombreA.get(position));
+
+            return row;
+        }
     }
 
 }
