@@ -16,4 +16,5 @@
     <string name="todos">Ver usuarios disponibles</string>
     <string name="posActual">Ver</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="verAll">ver usuarios disponibles</string>
 </resources>

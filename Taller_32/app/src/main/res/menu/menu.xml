@@ -16,5 +16,6 @@
         android:id="@+id/salir"
         android:icon="@drawable/ic_baseline_login_24"
         android:title="@string/salir"
-        android:visible="true"/>
+        android:visible="true"
+        />
 </menu>

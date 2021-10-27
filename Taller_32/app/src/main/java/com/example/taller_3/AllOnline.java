@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,10 +23,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.taller_3.modelo.Usuario;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,6 +45,9 @@ import java.util.ArrayList;
 
 public class AllOnline extends AppCompatActivity {
 
+    private FirebaseAuth mAuth;
+    FirebaseUser currentUser;
+
     FirebaseDatabase database;
     DatabaseReference myRef;
     FirebaseStorage storage;
@@ -52,12 +60,17 @@ public class AllOnline extends AppCompatActivity {
     ListView list;
     ValueEventListener val;
 
+    boolean cambio=false;
+
     public static final String PATH_USERS="users/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_online);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
         database = FirebaseDatabase.getInstance();
 
@@ -68,11 +81,6 @@ public class AllOnline extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
 
     @Override
     protected void onResume() {
@@ -86,6 +94,37 @@ public class AllOnline extends AppCompatActivity {
         super.onPause();
         if(val!=null)
             myRef.removeEventListener(val);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemClicked = item.getItemId();
+        if (itemClicked == R.id.salir) {
+            mAuth.signOut();
+            Intent intent = new Intent(AllOnline.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else if (itemClicked == R.id.online) {
+            myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/disponible");
+            if(cambio){
+                cambio=false;
+                myRef.setValue(false);
+                Toast.makeText(AllOnline.this,"Estado cambiado a No Disponible",Toast.LENGTH_LONG).show();
+            }else {
+                cambio=true;
+                myRef.setValue(true);
+                Toast.makeText(AllOnline.this,"Estado cambiado a Disponible",Toast.LENGTH_LONG).show();
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void changes(){

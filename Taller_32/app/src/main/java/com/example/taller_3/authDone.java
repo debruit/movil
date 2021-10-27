@@ -3,19 +3,27 @@ package com.example.taller_3;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.taller_3.databinding.ActivityMapsBinding;
@@ -54,7 +62,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class authDone extends FragmentActivity implements OnMapReadyCallback {
+public class authDone extends AppCompatActivity implements OnMapReadyCallback {
 
     private FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -67,7 +75,6 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
     boolean cambio=false;
 
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
 
     //Atributos de localizacion
     private FusedLocationProviderClient mFusedLocationClient;
@@ -99,6 +106,9 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_auth_done);
 
+//        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar2);
+//        setSupportActionBar(myToolbar);
+
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         database= FirebaseDatabase.getInstance();
@@ -112,7 +122,6 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
         locationCallback = createLocationCallback();
 
 
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_auth_done);
 
 
@@ -137,8 +146,10 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+        super.onCreateOptionsMenu(menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
