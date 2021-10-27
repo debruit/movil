@@ -53,7 +53,7 @@ public class Register extends AppCompatActivity {
             Pattern.CASE_INSENSITIVE);
     public static final String PATH_USERS="users/";
 
-    private EditText nombre,apellido,email,password,identificacion,latitud,longitud;
+    private EditText nombre,apellido,email,password,identificacion;
     private FirebaseAuth mAuth;
 
     Uri imageUri;
@@ -81,8 +81,6 @@ public class Register extends AppCompatActivity {
         email = findViewById(R.id.emailRegistrar);
         password = findViewById(R.id.passwordRegistrar);
         identificacion = findViewById(R.id.identificacion);
-        latitud = findViewById(R.id.latitud);
-        longitud = findViewById(R.id.longitud);
 
         mAuth = FirebaseAuth.getInstance();
         database= FirebaseDatabase.getInstance();
@@ -189,8 +187,8 @@ public class Register extends AppCompatActivity {
                             usuario.setNombre(nombre.getText().toString());
                             usuario.setApellido(apellido.getText().toString());
                             usuario.setId(Long.parseLong(identificacion.getText().toString()));
-                            usuario.setLatitud(Double.parseDouble(latitud.getText().toString()));
-                            usuario.setLongitud(Double.parseDouble(longitud.getText().toString()));
+                            usuario.setLatitud(null);
+                            usuario.setLongitud(null);
                             usuario.setDisponible(false);
 
                             uploadImg(user);
@@ -212,8 +210,6 @@ public class Register extends AppCompatActivity {
             email.setText("");
             password.setText("");
             identificacion.setText("");
-            latitud.setText("");
-            longitud.setText("");
         }
     }
 
@@ -224,8 +220,6 @@ public class Register extends AppCompatActivity {
         email.setText("");
         password.setText("");
         identificacion.setText("");
-        latitud.setText("");
-        longitud.setText("");
         Intent intent = new Intent(getBaseContext(),MainActivity.class);
         startActivity(intent);
     }

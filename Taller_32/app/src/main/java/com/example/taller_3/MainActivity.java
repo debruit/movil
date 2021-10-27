@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (!task.isSuccessful()) {
+                                Log.e("ERR",task.getException().toString());
                                 Toast.makeText(MainActivity.this, "Usuario o contraseña inválidos",
                                         Toast.LENGTH_LONG).show();
                                 email.setText("");
