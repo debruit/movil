@@ -113,12 +113,12 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
 
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_auth_done);
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.mapauthDone);
         mapFragment.getMapAsync(this);
     }
 
