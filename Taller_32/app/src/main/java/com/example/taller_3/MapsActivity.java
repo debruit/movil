@@ -110,6 +110,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         uidOU = bundle.getString("udi");
 
+        actual2 = new LatLng(0,0);
+
         requestPermission(this,locationPermission, "No lo podemos localizar sin su permiso",
                 locationid);
 
@@ -200,7 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 Usuario usuario = dataSnapshot.getValue(Usuario.class);
-                if((!usuario.getLatitud().equals(actual2.latitude))&&(!usuario.getLongitud().equals(actual2.longitude))){
+                if((!usuario.getLatitud().equals(Double.valueOf(actual2.latitude)))&&(!usuario.getLongitud().equals(Double.valueOf(actual2.longitude)))){
                     actual2 = new LatLng(usuario.getLatitud(), usuario.getLongitud());
                     if(currentLocationExU != null) currentLocationExU.remove();
                     currentLocationExU = mMap.addMarker(new MarkerOptions().position(actual2)

@@ -55,12 +55,15 @@ public class AllOnline extends AppCompatActivity {
     ArrayList<String> names = new ArrayList<>();
     ArrayList<Uri> sUris = new ArrayList<>();
 
+    Button button;
+
     AdapterS adp;
 
     ListView list;
     ValueEventListener val;
 
     boolean cambio=false;
+    String keyUser;
 
     public static final String PATH_USERS="users/";
 
@@ -138,6 +141,7 @@ public class AllOnline extends AppCompatActivity {
                 for (DataSnapshot child: dataSnapshot.getChildren()){
                     Usuario usuario = child.getValue(Usuario.class);
                     if(usuario.getDisponible()){
+                        keyUser = child.getKey();
                         String nm = usuario.getNombre()+" "+usuario.getApellido();
                         try {
                             downloadFile(child.getKey(),nm);
@@ -170,6 +174,7 @@ public class AllOnline extends AppCompatActivity {
                 names.add(nam);
                 adp = new AdapterS(AllOnline.this,names,sUris);
                 list.setAdapter(adp);
+
                 }})
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -199,6 +204,17 @@ public class AllOnline extends AppCompatActivity {
 
             ImageView imgView = row.findViewById(R.id.img);
             TextView name = row.findViewById(R.id.name);
+            Button buttonS = row.findViewById(R.id.ver);
+            buttonS.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("udi",keyUser);
+                    Intent intent = new Intent(v.getContext(),MapsActivity.class);
+                    intent.putExtra("bundle",bundle);
+                    startActivity(intent);
+                }
+            });
 
             imgView.setImageURI(this.foto.get(position));
             name.setText(this.nombreA.get(position));
