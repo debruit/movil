@@ -13,6 +13,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.taller_3.modelo.Usuario;
@@ -59,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     FirebaseDatabase database;
     DatabaseReference myRef;
+    DatabaseReference myRef2;
 
     private String uidOU;
 
@@ -198,9 +200,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void changes(){
-        myRef = database.getReference(PATH_USERS+uidOU);
+        myRef2 = database.getReference(PATH_USERS+uidOU);
+        //Log.e(TAG, "changes: ", "");
         // Read from the database
-        val = myRef.addValueEventListener(new ValueEventListener() {
+        val = myRef2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -211,9 +214,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     currentLocationExU = mMap.addMarker(new MarkerOptions().position(actual2)
                             .title("Ubicación de usuario").icon(BitmapDescriptorFactory
                                     .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                    Toast.makeText(MapsActivity.this, "Distancia: "+ distance(
-                            actual.latitude, actual.longitude, actual2.latitude,
-                            actual2.longitude )+" Km", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MapsActivity.this, "Distancia: "+ distance(
+                    //        actual.latitude, actual.longitude, actual2.latitude,
+                    //        actual2.longitude )+" Km", Toast.LENGTH_LONG).show();
 
                 }
             }
