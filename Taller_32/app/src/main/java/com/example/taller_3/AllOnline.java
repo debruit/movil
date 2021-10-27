@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -64,6 +66,12 @@ public class AllOnline extends AppCompatActivity {
 
         list = findViewById(R.id.list);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
     }
 
     @Override
@@ -148,11 +156,10 @@ public class AllOnline extends AppCompatActivity {
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             LayoutInflater layoutInflater = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View row = layoutInflater.inflate(R.layout.users,parent,false);
+            @SuppressLint("ViewHolder") View row = layoutInflater.inflate(R.layout.users,parent,false);
 
             ImageView imgView = row.findViewById(R.id.img);
             TextView name = row.findViewById(R.id.name);
-            Button button = row.findViewById(R.id.ver);
 
             imgView.setImageURI(this.foto.get(position));
             name.setText(this.nombreA.get(position));

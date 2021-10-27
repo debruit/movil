@@ -158,7 +158,6 @@ public class Register extends AppCompatActivity {
                         final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                         final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                         image.setImageBitmap(selectedImage);
-                        Log.e("POR ACAAA",image.getDrawable().toString());
                     } catch (FileNotFoundException e){
                         e.printStackTrace();
                     }
@@ -169,7 +168,6 @@ public class Register extends AppCompatActivity {
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
                     image.setImageBitmap(imageBitmap);
-                    Log.e("POR ACAAA",image.getDrawable().toString());
                 }
         }
     }
@@ -238,6 +236,20 @@ public class Register extends AppCompatActivity {
     }
 
     public boolean validar(String correo, String contra) {
+
+        if(TextUtils.isEmpty(nombre.getText().toString())){
+            nombre.setError("Required");
+            return false;
+        }
+        if(TextUtils.isEmpty(apellido.getText().toString())){
+            apellido.setError("Required");
+            return false;
+        }
+
+        if(TextUtils.isEmpty(identificacion.getText().toString())){
+            identificacion.setError("Required");
+            return false;
+        }
 
         if(TextUtils.isEmpty(correo)){
             email.setError("Required");
