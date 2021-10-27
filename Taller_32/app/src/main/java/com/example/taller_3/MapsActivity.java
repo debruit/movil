@@ -149,8 +149,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LocationRequest createLocationRequest(){
 
-        LocationRequest locationRequest = LocationRequest.create().setInterval(60000)
-                .setFastestInterval(30000)
+        LocationRequest locationRequest = LocationRequest.create().setInterval(10000)
+                .setFastestInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         return locationRequest;
@@ -171,6 +171,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     currentLocation = mMap.addMarker(new MarkerOptions().position(actual)
                             .title("Ubicación de usuario").icon(BitmapDescriptorFactory
                                     .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    Toast.makeText(MapsActivity.this, "Distancia: "+ distance(
+                            actual.latitude, actual.longitude, actual2.latitude,
+                            actual2.longitude )+" Km", Toast.LENGTH_LONG).show();
                     myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/latitud");
                     myRef.setValue(actual.latitude);
                     myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/longitud");
@@ -208,6 +211,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     currentLocationExU = mMap.addMarker(new MarkerOptions().position(actual2)
                             .title("Ubicación de usuario").icon(BitmapDescriptorFactory
                                     .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                    Toast.makeText(MapsActivity.this, "Distancia: "+ distance(
+                            actual.latitude, actual.longitude, actual2.latitude,
+                            actual2.longitude )+" Km", Toast.LENGTH_LONG).show();
 
                 }
             }
