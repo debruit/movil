@@ -2,7 +2,6 @@ package com.example.taller_3;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -18,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.taller_3.databinding.ActivityMapsBinding;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -67,7 +65,6 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
     boolean cambio=false;
 
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
 
     //Atributos de localizacion
     private FusedLocationProviderClient mFusedLocationClient;
@@ -112,7 +109,6 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
         locationCallback = createLocationCallback();
 
 
-        binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_auth_done);
 
 
@@ -170,7 +166,6 @@ public class authDone extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.moveCamera(CameraUpdateFactory.zoomTo(12));

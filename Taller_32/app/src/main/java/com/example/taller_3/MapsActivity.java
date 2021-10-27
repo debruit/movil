@@ -11,18 +11,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.taller_3.modelo.Usuario;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -41,19 +34,36 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.taller_3.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
-import java.util.List;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private FirebaseAuth mAuth;
+    FirebaseUser currentUser;
+    Bundle bundle;
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+
+    private String uidOU;
+
+
+    public static final double RADIUS_OF_EARTH_KM = 6371;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -70,9 +80,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng actual;
 
     //marccador de la localización del otro usuario
+    private Marker  currentLocationExU;
 
     //ubicacionn del otro usuario
     private LatLng actual2;
+
+    ValueEventListener val;
 
     int locationid = 3;
 
@@ -81,11 +94,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     String locationPermission = Manifest.permission.ACCESS_FINE_LOCATION;
 
+    public static final String PATH_USERS="users/";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        database= FirebaseDatabase.getInstance();
+
+        bundle = getIntent().getBundleExtra("bundle");
+
+        uidOU = bundle.getString("udi");
 
         requestPermission(this,locationPermission, "No lo podemos localizar sin su permiso",
                 locationid);
@@ -108,10 +131,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
         checkSettingsLocation();
+        changes();
     }
 
     @Override
@@ -139,11 +164,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (location != null){
 
                     if(currentLocation != null) currentLocation.remove();
-
+                    // aqui dento rescribo el firebase
                     actual = new LatLng(location.getLatitude(), location.getLongitude());
-                    //currentLocation = mMap.addMarker(new MarkerOptions().position(actual)
-                    //        .title("Ubicación de usuario").icon(BitmapDescriptorFactory
-                    //                .fromResource(R.drawable.racer)));
+                    currentLocation = mMap.addMarker(new MarkerOptions().position(actual)
+                            .title("Ubicación de usuario").icon(BitmapDescriptorFactory
+                                    .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/latitud");
+                    myRef.setValue(actual.latitude);
+                    myRef = database.getReference(PATH_USERS+currentUser.getUid()+"/longitud");
+                    myRef.setValue(actual.longitude);
                     if(ubicar == false){
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(actual));
                         ubicar = true;
@@ -161,6 +190,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PackageManager.PERMISSION_GRANTED){
             mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
+    }
+
+    public void changes(){
+        myRef = database.getReference(PATH_USERS+uidOU);
+        // Read from the database
+        val = myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Usuario usuario = dataSnapshot.getValue(Usuario.class);
+                if((!usuario.getLatitud().equals(actual2.latitude))&&(!usuario.getLongitud().equals(actual2.longitude))){
+                    actual2 = new LatLng(usuario.getLatitud(), usuario.getLongitud());
+                    if(currentLocationExU != null) currentLocationExU.remove();
+                    currentLocationExU = mMap.addMarker(new MarkerOptions().position(actual2)
+                            .title("Ubicación de usuario").icon(BitmapDescriptorFactory
+                                    .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+            }
+
+        });
+
     }
 
     private void stopLocationUpdates(){
@@ -251,5 +306,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public double distance(double lat1, double long1, double lat2, double long2) {
+        double latDistance = Math.toRadians(lat1 -lat2);
+        double lngDistance = Math.toRadians(long1 -long2);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)+ Math.cos(Math.toRadians(lat1)) *
+                Math.cos(Math.toRadians(lat2))* Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 -a));
+        double result = RADIUS_OF_EARTH_KM * c;
+        return Math.round(result*100.0)/100.0;
+    }
 
 }
